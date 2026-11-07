@@ -17,6 +17,7 @@ export const triageOutputSchema = z.object({
   refund: z.object({
     requested: z.boolean(),
     amount_inr: z.number().nonnegative(),
+    payment_ids: z.array(z.string()),
     reason: z.string()
   }).strict(),
 
