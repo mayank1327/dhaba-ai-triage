@@ -32,17 +32,43 @@ CLASSIFICATION:
 3. Suspected fraud, unauthorized charges and security concerns
    require special attention.
 4. Do not classify a normal feature request as a technical issue.
-
+Allowed categories:
+- billing
+- technical_issue
+- account_access
+- cancellation
+- feature_request
+- product_question
+- fraud
+- other
 REFUND RECOMMENDATION:
 1. Refund is a recommendation only, not an approval.
 2. Consider only successful payment transactions.
 3. Never recommend refunding failed or initiated transactions.
-4. Identify the exact payment IDs related to the recommendation.
-5. Never recommend an amount greater than the identified
-   successful payment amounts.
-6. If the evidence is insufficient, do not make a definitive
+4. Identify the exact payment IDs related to the refund recommendation.
+5. Return these IDs in the payment_ids array.
+6. payment_ids must contain only IDs present in the provided purchase history.
+7. If no refund is requested, return an empty payment_ids array.
+8. The recommended refund amount must not exceed the total
+   amount of the identified successful payments.
+9. If the evidence is insufficient, do not make a definitive
    recommendation and request human review.
-7. Never claim that a refund has been approved or processed.
+10. Never claim that a refund has been approved or processed.
+11. If requested is false:
+    amount_inr must be 0 and payment_ids must be [].
+
+12. If requested is true:
+    payment_ids must contain at least one successful payment ID.
+
+13. amount_inr must equal the sum of the identified payment amounts.
+
+14. Never include the same payment ID more than once.
+
+Severity levels:
+- low: General questions and feature requests.
+- medium: Normal account or billing issues.
+- high: Significant payment disputes or major product failures.
+- critical: Suspected fraud, unauthorized transactions or urgent security concerns.
 
 CUSTOMER REPLY:
 1. Draft a polite, empathetic and concise response.
@@ -63,9 +89,39 @@ Return a number between 0 and 1 representing confidence
 in your overall ticket assessment.
 Low confidence should result in human review.
 
-OUTPUT:
-Return only valid JSON matching the required output schema.
-Do not include Markdown, explanations or additional fields.
+OUTPUT FORMAT:
+
+Return ONLY a JSON object with exactly these six fields:
+
+{
+  "category": "billing",
+  "severity": "medium",
+  "refund": {
+    "requested": false,
+    "amount_inr": 0,
+    "payment_ids": [],
+    "reason": "No refund recommended."
+  },
+  "reply_draft": "Customer-facing response",
+  "needs_human": false,
+  "confidence": 0.85
+}
+
+STRICT RULES:
+1. Use exactly these field names.
+2. Do not add an id field.
+3. Do not use refund_recommendation.
+4. Do not use customer_reply.
+5. severity must be exactly one of:
+   low, medium, high, critical.
+6. category must be one of the allowed categories.
+7. refund must always be an object with all four fields:
+   requested, amount_inr, payment_ids, reason.
+8. payment_ids must always be an array.
+9. reply_draft must always be a string.
+10. needs_human must always be a boolean.
+11. confidence must always be a number between 0 and 1.
+12. Return valid JSON only. No Markdown.
 `
       },
       {
@@ -97,8 +153,13 @@ Do not include Markdown, explanations or additional fields.
     const validation = triageOutputSchema.safeParse(parsedResponse);
 
     if (!validation.success) {
-    throw new Error("AI returned an invalid triage structure");
-    }
+        console.error(
+          "AI validation issues:",
+          validation.error.issues
+        );
+      
+        throw new Error("AI returned an invalid triage structure");
+      }
 
     return validation.data;
 
