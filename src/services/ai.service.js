@@ -4,7 +4,11 @@ import { triageOutputSchema } from "../validators/triage-output.schema.js";
 const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 
 export const generateAIResponse = async (ticket) => {
-  const groq = getGroqClient();
+  let lastError;
+
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+    const groq = getGroqClient();
 
   const completion = await groq.chat.completions.create({
     model: MODEL,
@@ -162,5 +166,17 @@ STRICT RULES:
       }
 
     return validation.data;
+} catch (error) {
+    lastError = error;
+
+    if (attempt === 2) {
+      break;
+    }
+  }
+}
+
+throw new Error("AI triage failed after 2 attempts", {
+  cause: lastError
+});
 
 };
