@@ -2,9 +2,38 @@
 import { generateAIResponse } from "./ai.service.js";
 import { triageOutputSchema } from "../validators/triage-output.schema.js";
 import { evaluateRefund } from "./refund-safety.service.js";
+import {
+    reserveTicket,
+    completeTicket,
+    releaseTicket
+  } from "./idempotency.service.js";
 
 export const processTicket = async (ticket) => {
-  let triageResult;
+    const reservation = await reserveTicket(ticket.id);
+
+    // Ticket already exists in database
+    if (!reservation.reserved) {
+      const existingTicket = reservation.existingResult;
+  
+      if (existingTicket.status === "completed") {
+        return {
+          statusCode: 200,
+          data: existingTicket.result
+        };
+      }
+  
+      return {
+        statusCode: 409,
+        data: {
+          success: false,
+          ticketId: ticket.id,
+          message: "This ticket is already being processed."
+        }
+      };
+    }
+  
+    try {
+    let triageResult;
   let processingStatus = "completed";
 
   try {
@@ -34,7 +63,7 @@ export const processTicket = async (ticket) => {
     triageResult
   );
 
-  return {
+  const result = {
     success: true,
     ticketId: ticket.id,
     ...triageResult,
@@ -43,4 +72,16 @@ export const processTicket = async (ticket) => {
       processing_status: processingStatus
     })
   };
+
+  await completeTicket(ticket.id, result);
+
+
+  return {
+    statusCode: 200,
+    data: result
+  };
+} catch (error) {
+  await releaseTicket(ticket.id);
+  throw error;
+}
 };
