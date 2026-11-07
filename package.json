@@ -1,0 +1,17 @@
+{
+  "name": "dhaba",
+  "version": "1.0.0",
+  "description": "AI-powered customer support ticket triage service",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "groq-sdk": "^0.30.0",
+    "zod": "^4.1.12"
+  }
+}
