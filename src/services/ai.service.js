@@ -1,10 +1,35 @@
 import { getGroqClient } from "../config/groq.js";
 import { triageOutputSchema } from "../validators/triage-output.schema.js";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const fixtureResponses = require("../fixtures/triage-responses.json");
 
 const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 
 export const generateAIResponse = async (ticket) => {
-  let lastError;
+    const mode = process.env.AI_MODE || "live";
+
+    if (mode === "fixture") {
+      const fixture = fixtureResponses[ticket.id];
+    
+      if (!fixture) {
+        throw new Error(`Fixture not found for ticket: ${ticket.id}`);
+      }
+    
+      const validation = triageOutputSchema.safeParse(fixture);
+    
+      if (!validation.success) {
+        throw new Error("Fixture response has an invalid structure");
+      }
+    
+      return validation.data;
+    }
+    
+    if (mode !== "live") {
+      throw new Error(`Unsupported AI_MODE: ${mode}`);
+    }
+  
+    let lastError;
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {

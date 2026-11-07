@@ -1,0 +1,158 @@
+{
+    "T-1001": {
+      "category": "billing",
+      "severity": "high",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "Unexpected renewal is disputed and requires human review."
+      },
+      "reply_draft": "We understand your concern about the unexpected renewal. Our support team will review the transaction and get back to you.",
+      "needs_human": true,
+      "confidence": 0.95
+    },
+    "T-1002": {
+      "category": "technical_issue",
+      "severity": "high",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "The app crash requires technical investigation."
+      },
+      "reply_draft": "We're sorry you're experiencing app crashes. Our technical team will investigate the issue on your device.",
+      "needs_human": true,
+      "confidence": 0.95
+    },
+    "T-1003": {
+      "category": "account_access",
+      "severity": "medium",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "No refund eligibility is established. The issue concerns missing order history."
+      },
+      "reply_draft": "Thank you for reporting this. Please check that you are signed in with the same Google account. If your order history is still missing, our team can investigate further.",
+      "needs_human": false,
+      "confidence": 0.95
+    },
+    "T-1004": {
+      "category": "cancellation",
+      "severity": "low",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "Cancellation alone does not establish refund eligibility."
+      },
+      "reply_draft": "We can help you with your cancellation request. Please confirm that you want to cancel your subscription.",
+      "needs_human": false,
+      "confidence": 0.98
+    },
+    "T-1005": {
+      "category": "billing",
+      "severity": "medium",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "The payment is still initiated and has not been confirmed as successful."
+      },
+      "reply_draft": "Hum samajh sakte hain ki payment ke baad bhi premium access na milna frustrating hai. Abhi transaction initiated status mein hai. Hum payment confirmation check karne ki salah dete hain.",
+      "needs_human": true,
+      "confidence": 0.95
+    },
+    "T-1006": {
+      "category": "billing",
+      "severity": "high",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "The user disputes an annual renewal and claims autopay was disabled. Human verification is required."
+      },
+      "reply_draft": "We understand your concern about the annual renewal. Our support team will review the transaction and investigate your autopay concern.",
+      "needs_human": true,
+      "confidence": 0.95
+    },
+    "T-1007": {
+      "category": "feature_request",
+      "severity": "low",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "A language feature request does not establish refund eligibility."
+      },
+      "reply_draft": "Thank you for suggesting Marathi language support. We appreciate your feedback and will share it with our product team.",
+      "needs_human": false,
+      "confidence": 0.99
+    },
+    "T-1008": {
+      "category": "fraud",
+      "severity": "critical",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "The customer reports potentially unauthorized transactions. Immediate human investigation is required."
+      },
+      "reply_draft": "We're sorry to hear about these unexpected charges. We take unauthorized payment reports seriously. Our support team will investigate this urgently.",
+      "needs_human": true,
+      "confidence": 0.99
+    },
+    "T-1009": {
+      "category": "billing",
+      "severity": "medium",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "Only one successful payment is recorded. The other transaction failed, so a duplicate successful charge is not established."
+      },
+      "reply_draft": "We understand your concern about the two transactions. Our records show one successful payment and one failed transaction. Please review your bank statement for the final debit.",
+      "needs_human": false,
+      "confidence": 0.98
+    },
+    "T-1010": {
+      "category": "billing",
+      "severity": "low",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "The customer is requesting an invoice, not a refund."
+      },
+      "reply_draft": "Thank you for contacting us. We can help you with your GST invoice request. Our support team will assist with the invoice details.",
+      "needs_human": false,
+      "confidence": 0.98
+    },
+    "T-1011": {
+      "category": "product_question",
+      "severity": "low",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "This is a product information request. No refund is requested."
+      },
+      "reply_draft": "Thank you for your question. Some app features may require an internet connection. Please check the specific feature's requirements for offline availability.",
+      "needs_human": false,
+      "confidence": 0.95
+    },
+    "T-1012": {
+      "category": "billing",
+      "severity": "high",
+      "refund": {
+        "requested": false,
+        "amount_inr": 0,
+        "payment_ids": [],
+        "reason": "The customer disputes a renewal and requests a refund. Human review is required."
+      },
+      "reply_draft": "We're sorry that you've had this experience. We understand your refund concern and our support team will review the transaction.",
+      "needs_human": true,
+      "confidence": 0.95
+    }
+  }
