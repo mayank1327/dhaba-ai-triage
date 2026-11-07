@@ -1,4 +1,5 @@
 import { getTicketResultsCollection } from "../config/database.js";
+import logger from "../utils/logger.js";
 
 export const reserveTicket = async (ticketId) => {
   const collection = getTicketResultsCollection();
@@ -12,6 +13,10 @@ export const reserveTicket = async (ticketId) => {
       updatedAt: new Date()
     });
 
+    logger.info("ticket_reservation_created", {
+        ticketId,
+      });
+
     return {
       reserved: true,
       existingResult: null
@@ -22,6 +27,16 @@ export const reserveTicket = async (ticketId) => {
     }
 
     const existingTicket = await collection.findOne({ ticketId });
+
+    if (!existingTicket) {
+        throw error;
+      }
+  
+      if (existingTicket.status === "completed") {
+        logger.info("duplicate_completed_ticket", { ticketId });
+      } else {
+        logger.warn("ticket_already_processing", { ticketId });
+      }
 
     return {
       reserved: false,
@@ -43,6 +58,12 @@ export const completeTicket = async (ticketId, result) => {
       }
     }
   );
+
+  if (result.modifiedCount === 1) {
+    logger.info("ticket_processing_completed", { ticketId });
+  } else {
+    logger.error("ticket_completion_failed", { ticketId });
+  }
 };
 
 export const releaseTicket = async (ticketId) => {
@@ -52,4 +73,8 @@ export const releaseTicket = async (ticketId) => {
     ticketId,
     status: "processing"
   });
+
+  if (result.deletedCount === 1) {
+    logger.warn("ticket_reservation_released", { ticketId });
+  }
 };

@@ -1,17 +1,27 @@
 import { getGroqClient } from "../config/groq.js";
 import { triageOutputSchema } from "../validators/triage-output.schema.js";
 import { createRequire } from "node:module";
+import logger from "../utils/logger.js";
+
 const require = createRequire(import.meta.url);
 const fixtureResponses = require("../fixtures/triage-responses.json");
 
 const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 
 export const generateAIResponse = async (ticket) => {
+    logger.info("ai_processing_started", {
+        ticketId: ticket.id,
+        mode: process.env.AI_MODE || "live",
+      });
     const mode = process.env.AI_MODE || "live";
 
     if (mode === "fixture") {
       const fixture = fixtureResponses[ticket.id];
-    
+      
+      logger.info("ai_fixture_response_used", {
+        ticketId: ticket.id,
+      });
+      
       if (!fixture) {
         throw new Error(`Fixture not found for ticket: ${ticket.id}`);
       }
@@ -32,6 +42,12 @@ export const generateAIResponse = async (ticket) => {
     let lastError;
 
   for (let attempt = 1; attempt <= 2; attempt++) {
+    logger.info("ai_attempt_started", {
+        ticketId: ticket.id,
+        attempt,
+      });    
+   
+   
     try {
     const groq = getGroqClient();
 
@@ -182,23 +198,32 @@ STRICT RULES:
     const validation = triageOutputSchema.safeParse(parsedResponse);
 
     if (!validation.success) {
-        console.error(
-          "AI validation issues:",
-          validation.error.issues
-        );
-      
+        logger.warn("ai_output_validation_failed", {
+            ticketId: ticket.id,
+            attempt,
+          });
         throw new Error("AI returned an invalid triage structure");
       }
 
     return validation.data;
 } catch (error) {
     lastError = error;
-
+    logger.warn("ai_attempt_failed", {
+        ticketId: ticket.id,
+        attempt,
+        errorType: error.name,
+      });
+    
     if (attempt === 2) {
       break;
     }
   }
 }
+
+logger.error("ai_processing_failed", {
+    ticketId: ticket.id,
+    attempts: 2,
+  });
 
 throw new Error("AI triage failed after 2 attempts", {
   cause: lastError

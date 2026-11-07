@@ -1,14 +1,20 @@
-export const errorHandler = (err, req, res, next) => {
-    console.error("Request failed:", {
-      method: req.method,
-      path: req.path,
-      error: err.message
-    });
-  
-    return res.status(err.statusCode || 500).json({
-      success: false,
-      message: err.statusCode
-        ? err.message
-        : "Internal server error"
-    });
-  };
+
+import logger from "../utils/logger.js";
+
+export const errorHandler = (error, req, res, next) => {
+  logger.error("unhandled_application_error", {
+    requestId: req.requestId,
+    errorType: error.name,
+    statusCode: error.statusCode || 500,
+  });
+
+  const statusCode = error.statusCode || 500;
+
+  res.status(statusCode).json({
+    success: false,
+    message:
+      statusCode === 500
+        ? "Internal server error"
+        : error.message,
+  });
+};
